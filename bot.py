@@ -477,6 +477,29 @@ async def procesar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 # ==========================================
+# 10. SERVIDOR WEB FALSO (para Render)
+# ==========================================
+try:
+    from flask import Flask
+    import threading
+    
+    app_flask = Flask(__name__)
+    
+    @app_flask.route('/')
+    def health_check():
+        return "✅ Bot de Telegram funcionando correctamente", 200
+    
+    def run_flask():
+        port = int(os.environ.get("PORT", 10000))
+        app_flask.run(host="0.0.0.0", port=port, threaded=True)
+    
+    # Iniciar Flask en un hilo separado (no bloquea el bot)
+    threading.Thread(target=run_flask, daemon=True).start()
+    print("🌐 Servidor web falso iniciado en puerto", os.environ.get("PORT", 10000))
+except ImportError:
+    print("⚠️ Flask no instalado. El servidor web falso no se iniciará.")
+
+# ==========================================
 # 9. MAIN
 # ==========================================
 def main():
